@@ -23,8 +23,14 @@ class _splashscreenState extends State<splashscreen> {
 
   @override
   Widget build(BuildContext context) {
-    return Container(
-        color: Colors.white,
-        child: FlutterLogo(size: MediaQuery.of(context).size.height * 0.6));
+    return Scaffold(
+      appBar: AppBar(
+        title: Text("AiUTOMATION"),
+      ),
+      body: Center(
+        child: Container(
+            color: Colors.white, child: Image.asset("assets/images/logo.jpg")),
+      ),
+    );
   }
 }
