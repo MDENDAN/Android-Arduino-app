@@ -436,6 +436,7 @@ class _BluetoothAppState extends State<BluetoothApp> {
         await BluetoothConnection.toAddress(_device?.address)
             .then((_connection) {
           print('Connected to the device');
+          show('Device connected');
           connection = _connection;
           setState(() {
             _connected = true;
@@ -456,7 +457,6 @@ class _BluetoothAppState extends State<BluetoothApp> {
           print('Cannot connect, exception occurred');
           print(error);
         });
-        show('Device connected');
 
         setState(() => _isButtonUnavailable = false);
       }
