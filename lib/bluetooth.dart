@@ -12,15 +12,13 @@ class BluetoothApp extends StatefulWidget {
 class _BluetoothAppState extends State<BluetoothApp> {
   // Initializing the Bluetooth connection state to be unknown
   BluetoothState _bluetoothState = BluetoothState.UNKNOWN;
-  // Initializing a global key, as it would help us in showing a SnackBar later
-  final GlobalKey<ScaffoldState> _scaffoldKey = GlobalKey<ScaffoldState>();
   // Get the instance of the Bluetooth
   final FlutterBluetoothSerial _bluetooth = FlutterBluetoothSerial.instance;
   // Track the Bluetooth connection with the remote device
   BluetoothConnection? connection;
 
   List _deviceState = [0, 0, 0, 0];
-
+  List variables = ["a", "c", "e", "g", "b", "d", "f", "h"];
   bool isDisconnecting = false;
 
   Map<String, Color?> colors = {
@@ -359,7 +357,7 @@ class _BluetoothAppState extends State<BluetoothApp> {
                                             onPressed: _connected
                                                 ? () {
                                                     _sendOnMessageToBluetooth(
-                                                        "b", i);
+                                                        variables[i + 4], i);
                                                   }
                                                 : null,
                                             child: Text(
@@ -377,7 +375,7 @@ class _BluetoothAppState extends State<BluetoothApp> {
                                             onPressed: _connected
                                                 ? () {
                                                     _sendOffMessageToBluetooth(
-                                                        "a", i);
+                                                        variables[i], i);
                                                   }
                                                 : null,
                                             child: Text(
