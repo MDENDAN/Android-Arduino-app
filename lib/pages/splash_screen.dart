@@ -1,6 +1,6 @@
 import 'dart:async';
 
-import 'package:demo_arduino/bluetooth.dart';
+import 'package:demo_arduino/pages/bluetooth.dart';
 import 'package:flutter/material.dart';
 
 class splashscreen extends StatefulWidget {

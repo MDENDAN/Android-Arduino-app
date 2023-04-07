@@ -1,8 +1,10 @@
 import 'dart:convert';
-
+import 'package:avatar_glow/avatar_glow.dart';
+import 'package:demo_arduino/api/sppech_to_text.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:flutter_bluetooth_serial/flutter_bluetooth_serial.dart';
+import 'package:flutter_tts/flutter_tts.dart';
 
 class BluetoothApp extends StatefulWidget {
   @override
@@ -10,6 +12,7 @@ class BluetoothApp extends StatefulWidget {
 }
 
 class _BluetoothAppState extends State<BluetoothApp> {
+  final FlutterTts flutterTts = FlutterTts();
   // Initializing the Bluetooth connection state to be unknown
   BluetoothState _bluetoothState = BluetoothState.UNKNOWN;
   // Get the instance of the Bluetooth
@@ -19,7 +22,11 @@ class _BluetoothAppState extends State<BluetoothApp> {
 
   List _deviceState = [0, 0, 0, 0];
   List variables = ["a", "c", "e", "g", "b", "d", "f", "h"];
+  List roomAppliance = ['Bedroom', 'Kitchen', 'Room', 'Bathroom'];
   bool isDisconnecting = false;
+
+  String text = 'Press the button and give command';
+  bool isListening = false;
 
   Map<String, Color?> colors = {
     'onBorderColor': Colors.green,
@@ -28,6 +35,7 @@ class _BluetoothAppState extends State<BluetoothApp> {
     'onTextColor': Colors.green[400],
     'offTextColor': Colors.red[400],
     'neutralTextColor': Colors.blue,
+    'disableColor': Colors.blue[100]
   };
 
   // To track whether the device is still connected to Bluetooth
@@ -269,38 +277,11 @@ class _BluetoothAppState extends State<BluetoothApp> {
                       ],
                     ),
                   ),
-                  Padding(
-                    padding:
-                        const EdgeInsets.only(left: 20, right: 20, top: 20),
-                    child: Center(
-                      child: Column(
-                        mainAxisAlignment: MainAxisAlignment.center,
-                        children: const <Widget>[
-                          Text(
-                            "NOTE: Please pair the device before connecting by going to the bluetooth settings",
-                            textAlign: TextAlign.center,
-                            style: TextStyle(
-                              fontSize: 15,
-                              fontWeight: FontWeight.bold,
-                              color: Colors.red,
-                            ),
-                          ),
-                          SizedBox(height: 2),
-                        ],
-                      ),
-                    ),
-                  ),
-                  ElevatedButton(
-                    // elevation: 2,
-                    child: Text("Bluetooth Settings"),
-                    onPressed: () {
-                      FlutterBluetoothSerial.instance.openSettings();
-                    },
-                  ),
+
                   SizedBox(
                     height: 5,
                   ),
-                  Divider(height: 3, color: Colors.grey),
+                  // Divider(height: 3, color: Colors.grey),
                   Padding(
                     padding: const EdgeInsets.all(10),
                     child: Text(
@@ -312,6 +293,7 @@ class _BluetoothAppState extends State<BluetoothApp> {
                   Container(
                     height: MediaQuery.of(context).size.height * 0.35,
                     child: SingleChildScrollView(
+                      reverse: true,
                       child: Stack(
                         children: [
                           Column(
@@ -339,7 +321,7 @@ class _BluetoothAppState extends State<BluetoothApp> {
                                         children: <Widget>[
                                           Expanded(
                                             child: Text(
-                                              "DEVICE ${i + 1}",
+                                              roomAppliance[i],
                                               style: TextStyle(
                                                 fontSize: 20,
                                                 color: _deviceState[i] == 0
@@ -359,7 +341,7 @@ class _BluetoothAppState extends State<BluetoothApp> {
                                                     _sendOnMessageToBluetooth(
                                                         variables[i + 4], i);
                                                   }
-                                                : null,
+                                                : floatingButtonDisableClick,
                                             child: Text(
                                               "ON",
                                               style: TextStyle(
@@ -377,7 +359,7 @@ class _BluetoothAppState extends State<BluetoothApp> {
                                                     _sendOffMessageToBluetooth(
                                                         variables[i], i);
                                                   }
-                                                : null,
+                                                : floatingButtonDisableClick,
                                             child: Text(
                                               "OFF",
                                               style: TextStyle(
@@ -397,10 +379,93 @@ class _BluetoothAppState extends State<BluetoothApp> {
                   ),
                 ],
               ),
+              isConnected
+                  ?
+                  // Speech text
+                  Column(
+                      children: [
+                        Divider(color: Colors.black87, thickness: 1.5),
+                        Padding(
+                          padding: const EdgeInsets.only(
+                            top: 8.0,
+                          ),
+                          child: RichText(
+                            text: TextSpan(
+                              children: [
+                                TextSpan(
+                                    text: text,
+                                    style: TextStyle(
+                                      color: Colors.black,
+                                    )),
+                              ],
+                            ),
+                          ),
+                        )
+                      ],
+                    )
+                  : Container(
+                      child: Column(
+                        children: [
+                          Padding(
+                            padding: const EdgeInsets.only(
+                                left: 20, right: 20, top: 20),
+                            child: Center(
+                              child: Column(
+                                mainAxisAlignment: MainAxisAlignment.center,
+                                children: const <Widget>[
+                                  Text(
+                                    "NOTE: Please pair the device before connecting by going to the bluetooth settings",
+                                    textAlign: TextAlign.center,
+                                    style: TextStyle(
+                                      fontSize: 15,
+                                      fontWeight: FontWeight.bold,
+                                      color: Colors.red,
+                                    ),
+                                  ),
+                                  SizedBox(height: 2),
+                                ],
+                              ),
+                            ),
+                          ),
+                          ElevatedButton(
+                            // elevation: 2,
+                            child: Text("Bluetooth Settings"),
+                            onPressed: () {
+                              FlutterBluetoothSerial.instance.openSettings();
+                            },
+                          ),
+                        ],
+                      ),
+                    ),
             ],
           ),
         ),
       ),
+      floatingActionButtonLocation: isConnected
+          ? FloatingActionButtonLocation.miniCenterDocked
+          : FloatingActionButtonLocation.endDocked,
+      floatingActionButton: AvatarGlow(
+        endRadius: 55,
+        animate: isListening,
+        glowColor: colors['neutralTextColor']!,
+        child: FloatingActionButton(
+          backgroundColor:
+              isConnected ? colors['neutralTextColor'] : Colors.black12,
+          onPressed: isConnected
+              ? () async {
+                  await toggleRecording();
+                }
+              : floatingButtonDisableClick,
+          child: Icon(
+            isListening ? Icons.mic : Icons.mic_off_outlined,
+            size: 30,
+          ),
+        ),
+      ),
+      // bottomNavigationBar: FloatingActionButton(
+      //   onPressed: () {},
+      //   child: Icon(Icons.mic),
+      // ),
     );
   }
 
@@ -513,7 +578,7 @@ class _BluetoothAppState extends State<BluetoothApp> {
   _sendOnMessageToBluetooth(String message, int i) async {
     connection?.output.add(utf8.encode("$message") as Uint8List);
     await connection?.output.allSent;
-    show('Device Turned On');
+    show('${roomAppliance[i]} LED turned on');
     setState(() {
       _deviceState[i] = 1; // device on
     });
@@ -524,7 +589,7 @@ class _BluetoothAppState extends State<BluetoothApp> {
   _sendOffMessageToBluetooth(String message, int i) async {
     connection?.output.add(utf8.encode("$message") as Uint8List);
     await connection?.output.allSent;
-    show('Device Turned Off');
+    show('${roomAppliance[i]} LED switch Off');
     setState(() {
       _deviceState[i] = -1; // device off
     });
@@ -534,9 +599,10 @@ class _BluetoothAppState extends State<BluetoothApp> {
   // taking message as the text
   show(
     String message, {
-    Duration duration = const Duration(milliseconds: 1500),
+    Duration duration = const Duration(milliseconds: 700),
   }) async {
     await Future.delayed(new Duration(milliseconds: 100));
+    speak(message);
     ScaffoldMessenger.of(context).showSnackBar(
       SnackBar(
         backgroundColor: Colors.blue[300],
@@ -546,5 +612,51 @@ class _BluetoothAppState extends State<BluetoothApp> {
         duration: duration,
       ),
     );
+  }
+
+  Future toggleRecording() {
+    return SpeechApi.toggleRecording(
+      onResult: (text) => setState(() {
+        this.text = text;
+        handleVoiceCommand(text);
+      }),
+      onListening: (isListening) {
+        setState(() => this.isListening = isListening);
+      },
+    );
+  }
+
+  floatingButtonDisableClick() {
+    show('Connect to device');
+  }
+
+  void handleVoiceCommand(String text) {
+    List list = text.split(' ');
+    var i = 0;
+    while (roomAppliance.isNotEmpty) {
+      if (list[0] == roomAppliance[i].toString().toLowerCase()) {
+        break;
+      }
+      i++;
+    }
+    switch (list[list.length - 1]) {
+      case "off":
+        _sendOffMessageToBluetooth(variables[i], i);
+        break;
+      case "on":
+        _sendOnMessageToBluetooth(variables[i + 4], i);
+        break;
+      // Add more cases for other voice commands here
+      default:
+        print("Unrecognized command: $text");
+    }
+  }
+
+  speak(String text) async {
+    await flutterTts.setLanguage('en-US');
+    await flutterTts.setPitch(0.9);
+    await flutterTts.setSpeechRate(0.3);
+    await flutterTts.setVolume(1);
+    await flutterTts.speak(text);
   }
 }
