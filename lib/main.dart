@@ -1,14 +1,9 @@
 // For performing some operations asynchronously
-import 'dart:async';
-import 'dart:convert';
 
 // For using PlatformException
-import 'package:demo_arduino/pages/bluetooth.dart';
 import 'package:demo_arduino/pages/splash_screen.dart';
-import 'package:flutter/services.dart';
 
 import 'package:flutter/material.dart';
-import 'package:flutter_bluetooth_serial/flutter_bluetooth_serial.dart';
 
 void main() => runApp(MyApp());
 

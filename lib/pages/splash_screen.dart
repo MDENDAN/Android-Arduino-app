@@ -16,7 +16,7 @@ class _splashscreenState extends State<splashscreen> {
     // TODO: implement initState
     super.initState();
     Timer(
-        Duration(seconds: 5),
+        Duration(seconds: 13),
         () => Navigator.pushReplacement(
             context, MaterialPageRoute(builder: (context) => BluetoothApp())));
   }
@@ -29,7 +29,7 @@ class _splashscreenState extends State<splashscreen> {
       ),
       body: Center(
         child: Container(
-            color: Colors.white, child: Image.asset("assets/images/logo.jpg")),
+            color: Colors.white, child: Image.asset("assets/images/logo.gif")),
       ),
     );
   }
