@@ -16,7 +16,7 @@ class _splashscreenState extends State<splashscreen> {
     // TODO: implement initState
     super.initState();
     Timer(
-        Duration(seconds: 13),
+        Duration(seconds: 11),
         () => Navigator.pushReplacement(
             context, MaterialPageRoute(builder: (context) => BluetoothApp())));
   }
