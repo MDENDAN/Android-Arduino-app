@@ -28,8 +28,20 @@ class _splashscreenState extends State<splashscreen> {
         title: Text("AiUTOMATION"),
       ),
       body: Center(
-        child: Container(
-            color: Colors.white, child: Image.asset("assets/images/logo.gif")),
+        child: Column(
+          mainAxisAlignment: MainAxisAlignment.center,
+          children: [
+            Text(
+              " Welcome To",
+              style: TextStyle(
+                  fontSize: MediaQuery.of(context).size.width * 0.085,
+                  fontWeight: FontWeight.w600),
+            ),
+            Container(
+                color: Colors.white,
+                child: Image.asset("assets/images/logo.gif")),
+          ],
+        ),
       ),
     );
   }

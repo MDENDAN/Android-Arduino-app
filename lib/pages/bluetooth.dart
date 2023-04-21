@@ -139,8 +139,18 @@ class _BluetoothAppState extends State<BluetoothApp> {
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBar(
-        title: Text("HOMIFY"),
-        backgroundColor: colors['neutralTextColor'],
+        leading: new Image.asset(
+          "assets/images/icon.jpg",
+          fit: BoxFit.cover,
+        ),
+        title: Text(
+          "HOMIFY",
+          style: TextStyle(
+              fontWeight: FontWeight.bold,
+              letterSpacing: 2,
+              fontSize: MediaQuery.of(context).size.height * 0.05),
+        ),
+        backgroundColor: colors["neutralTextColor"],
         actions: <Widget>[
           TextButton.icon(
             style: TextButton.styleFrom(
@@ -324,18 +334,24 @@ class _BluetoothAppState extends State<BluetoothApp> {
                                               roomAppliance[i],
                                               style: TextStyle(
                                                 fontSize: 20,
-                                                color: _deviceState[i] == 0
-                                                    ? colors['neutralTextColor']
-                                                    : _deviceState[i] == 1
-                                                        ? colors['onTextColor']
-                                                        : colors[
-                                                            'offTextColor'],
+                                                color: isConnected
+                                                    ? _deviceState[i] == 0
+                                                        ? colors[
+                                                            'neutralTextColor']
+                                                        : _deviceState[i] == 1
+                                                            ? colors[
+                                                                'onTextColor']
+                                                            : colors[
+                                                                'offTextColor']
+                                                    : colors["disableColor"],
                                               ),
                                             ),
                                           ),
                                           TextButton(
                                             style: TextButton.styleFrom(
-                                                backgroundColor: Colors.blue),
+                                                backgroundColor: isConnected
+                                                    ? Colors.blue
+                                                    : colors["disableColor"]),
                                             onPressed: _connected
                                                 ? () {
                                                     _sendOnMessageToBluetooth(
@@ -353,7 +369,9 @@ class _BluetoothAppState extends State<BluetoothApp> {
                                           ),
                                           TextButton(
                                             style: TextButton.styleFrom(
-                                                backgroundColor: Colors.blue),
+                                                backgroundColor: isConnected
+                                                    ? Colors.blue
+                                                    : colors["disableColor"]),
                                             onPressed: _connected
                                                 ? () {
                                                     _sendOffMessageToBluetooth(
@@ -605,7 +623,8 @@ class _BluetoothAppState extends State<BluetoothApp> {
     speak(message);
     ScaffoldMessenger.of(context).showSnackBar(
       SnackBar(
-        backgroundColor: Colors.blue[300],
+        backgroundColor:
+            isConnected ? Colors.blue[300] : colors["disableColor"],
         content: new Text(
           message,
         ),
@@ -648,14 +667,14 @@ class _BluetoothAppState extends State<BluetoothApp> {
         break;
       // Add more cases for other voice commands here
       default:
-        print("Unrecognized command: $text");
+        speak("Unrecognized command: $text");
     }
   }
 
   speak(String text) async {
     await flutterTts.setLanguage('en-US');
     await flutterTts.setPitch(0.9);
-    await flutterTts.setSpeechRate(0.3);
+    await flutterTts.setSpeechRate(0.6);
     await flutterTts.setVolume(1);
     await flutterTts.speak(text);
   }
